@@ -1,9 +1,9 @@
 ---
-description: prime-mcp-agent
+description: prime-mcp-ag
 auto_execution_mode: 1
 ---
 
-#Prime MCP
+# Prime MCP
 
 The task you are working on today revolves around MCP.  
 
