@@ -1,5 +1,5 @@
 ---
-description: prime-mcp-ag
+description: prime-mcp
 auto_execution_mode: 1
 ---
 
