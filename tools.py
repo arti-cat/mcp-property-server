@@ -30,17 +30,18 @@ def query_listings(
     limit: int = 5
 ) -> List[Dict[str, Any]]:
     """
-    Searches and filters property listings based on specific criteria.
-    Returns a list of matching listings, limited to 5 by default.
+    Use this when the user wants to find, search, or browse properties for sale.
+    Searches 475 property listings and filters by location, price, bedrooms, garden, and parking.
+    Returns up to 5 matching properties by default.
 
     Args:
-        postcode: The postcode to filter by (e.g., "DY4 7LG").
-        property_type: The type of property (e.g., "Flat", "Apartment - First Floor").
-        max_price: The maximum price (e.g., 100000).
-        min_bedrooms: The minimum number of bedrooms (e.g., 1).
-        has_garden: Must have a garden.
-        has_parking: Must have parking.
-        limit: The maximum number of listings to return. Defaults to 5.
+        postcode: Partial or full UK postcode (e.g., "LE65" matches "LE65 1DA", "LE65 2AY", etc. or "DY4" for all DY4 postcodes). Case-insensitive.
+        property_type: Type of property (e.g., "Flat", "House", "Cottage", "Apartment"). Partial matches work (e.g., "flat" matches "Flat - Ground Floor").
+        max_price: Maximum price in GBP (e.g., 200000 for £200,000). Only returns properties at or below this price.
+        min_bedrooms: Minimum number of bedrooms (e.g., 2 returns properties with 2 or more bedrooms).
+        has_garden: Set to True to only show properties with a garden. Set to False to only show properties without a garden. Leave None to include both.
+        has_parking: Set to True to only show properties with parking. Set to False to only show properties without parking. Leave None to include both.
+        limit: Maximum number of results to return (default: 5, increase for more results).
     """
     print(f"Tool: Received query with criteria: postcode={postcode}, max_price={max_price}, min_bedrooms={min_bedrooms}, garden={has_garden}, parking={has_parking}")
     
@@ -82,12 +83,13 @@ def calculate_average_price(
     property_type: Optional[str] = None
 ) -> Dict[str, Any]:
     """
-    Calculates the average price for listings that match the given criteria.
-    You must provide at least one filter (e.g., postcode or property_type).
+    Use this when the user asks about average prices, price trends, or typical costs in an area.
+ Calculates the average price for properties matching the given postcode or property type.
+ Provide at least one filter (postcode or property_type).
 
     Args:
-        postcode: The postcode to calculate for (e.g., "DY4 7LG").
-        property_type: The type of property (e.g., "Flat").
+        postcode: Partial or full UK postcode (e.g., "LE65" for all LE65 postcodes, "DY4 7LG" for specific area). Case-insensitive.
+        property_type: Type of property (e.g., "Flat", "House", "Cottage"). Partial matches work.
     """
     all_listings = get_listings_data()
     
