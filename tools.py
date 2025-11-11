@@ -28,7 +28,7 @@ def query_listings(
     has_garden: Optional[bool] = None,
     has_parking: Optional[bool] = None,
     limit: int = 5
-) -> List[Dict[str, Any]]:
+) -> Dict[str, Any]:
     """
     Use this when the user wants to find, search, or browse properties for sale.
     Searches 475 property listings and filters by location, price, bedrooms, garden, and parking.
@@ -73,9 +73,20 @@ def query_listings(
         # If all checks passed, add it to the list
         filtered_results.append(listing)
     
-    # Always return a limited number of results!
-    # This saves tokens and keeps the AI response focused.
-    return filtered_results[:limit]
+    # Return enhanced response structure for widget
+    return {
+        "properties": filtered_results[:limit],
+        "filters_applied": {
+            "postcode": postcode,
+            "property_type": property_type,
+            "max_price": max_price,
+            "min_bedrooms": min_bedrooms,
+            "has_garden": has_garden,
+            "has_parking": has_parking
+        },
+        "total_results": len(filtered_results),
+        "showing": min(limit, len(filtered_results))
+    }
 
 
 def calculate_average_price(

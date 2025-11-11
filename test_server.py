@@ -67,15 +67,18 @@ async def test_query_listings_by_postcode(
     )
     
     assert result.data is not None
-    assert isinstance(result.data, list)
+    assert isinstance(result.data, dict)
+    assert "properties" in result.data
+    
+    properties = result.data["properties"]
     
     if expected_min_count > 0:
-        assert len(result.data) >= expected_min_count
+        assert len(properties) >= expected_min_count
         # Verify all results match the postcode
-        for listing in result.data:
+        for listing in properties:
             assert listing.get("postcode") == postcode
     else:
-        assert len(result.data) == 0
+        assert len(properties) == 0
 
 
 @pytest.mark.parametrize(
@@ -103,11 +106,14 @@ async def test_query_listings_with_filters(
     )
     
     assert result.data is not None
-    assert isinstance(result.data, list)
-    assert len(result.data) <= limit
+    assert isinstance(result.data, dict)
+    assert "properties" in result.data
+    
+    properties = result.data["properties"]
+    assert len(properties) <= limit
     
     # Verify all results match the filters
-    for listing in result.data:
+    for listing in properties:
         assert listing.get("price_amount", 0) <= max_price
         assert listing.get("bedrooms", 0) >= min_bedrooms
 
@@ -126,10 +132,13 @@ async def test_query_listings_with_boolean_filters(
     )
     
     assert result.data is not None
-    assert isinstance(result.data, list)
+    assert isinstance(result.data, dict)
+    assert "properties" in result.data
+    
+    properties = result.data["properties"]
     
     # Verify all results have garden and parking
-    for listing in result.data:
+    for listing in properties:
         assert listing.get("garden") is True
         assert listing.get("parking") is True
 
@@ -199,8 +208,9 @@ async def test_query_listings_limit_respected(
         )
         
         assert result.data is not None
-        assert isinstance(result.data, list)
-        assert len(result.data) <= limit
+        assert isinstance(result.data, dict)
+        assert "properties" in result.data
+        assert len(result.data["properties"]) <= limit
 
 
 async def test_tool_descriptions(property_client: Client[FastMCPTransport]):

@@ -23,7 +23,7 @@ def query_listings(
     has_garden: bool | None = None,
     has_parking: bool | None = None,
     limit: int = 5
-) -> list:
+) -> dict:
     """Use this when the user wants to find, search, or browse properties for sale. Searches 475 property listings and filters by location (postcode like 'DY4' or 'LE65'), price range, number of bedrooms, garden availability, parking availability, and property type. Returns up to 5 matching properties by default. Perfect for queries like 'find properties in Ashby', 'show me 2-bed houses under £200k', or 'properties with gardens'."""
     return tools.query_listings(
         postcode=postcode,

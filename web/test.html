@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Widget Test</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .test-controls {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-controls">
+    <h3>Test Controls</h3>
+    <button onclick="toggleTheme()">Toggle Theme</button>
+    <button onclick="loadSampleData()">Load Sample Data</button>
+    <button onclick="clearData()">Clear Data</button>
+    <div style="margin-top: 10px; font-size: 12px;">
+      Theme: <span id="theme-display">light</span>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <script type="module">
+    // Mock window.openai API for local testing
+    let currentTheme = 'light';
+    let currentToolOutput = null;
+    let currentWidgetState = {
+      favorites: [],
+      hidden: [],
+      sortBy: 'price_asc'
+    };
+
+    window.openai = {
+      theme: currentTheme,
+      toolOutput: currentToolOutput,
+      widgetState: currentWidgetState,
+      displayMode: 'inline',
+      maxHeight: 600,
+      
+      callTool: async (name, args) => {
+        console.log('callTool:', name, args);
+        return { success: true };
+      },
+      
+      setWidgetState: async (state) => {
+        console.log('setWidgetState:', state);
+        currentWidgetState = state;
+        window.openai.widgetState = state;
+        dispatchSetGlobals({ widgetState: state });
+      },
+      
+      sendFollowUpMessage: async (args) => {
+        console.log('sendFollowUpMessage:', args);
+      },
+      
+      requestDisplayMode: async (args) => {
+        console.log('requestDisplayMode:', args);
+        return { mode: args.mode };
+      },
+      
+      openExternal: (payload) => {
+        console.log('openExternal:', payload);
+        window.open(payload.href, '_blank');
+      }
+    };
+
+    function dispatchSetGlobals(globals) {
+      const event = new CustomEvent('openai:set_globals', {
+        detail: { globals }
+      });
+      window.dispatchEvent(event);
+    }
+
+    window.toggleTheme = () => {
+      currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+      window.openai.theme = currentTheme;
+      document.getElementById('theme-display').textContent = currentTheme;
+      dispatchSetGlobals({ theme: currentTheme });
+    };
+
+    window.loadSampleData = () => {
+      currentToolOutput = {
+        properties: [
+          {
+            property_id: "32926983",
+            ld_name: "Potters Brook, Tipton",
+            ld_image: "https://www.royston-lund.co.uk/resize/32926983/0/1024",
+            price_text: "£81,995",
+            price_amount: 81995,
+            bedrooms: 1,
+            bathrooms: 1,
+            property_type: "Apartment - First Floor",
+            postcode: "DY4 7LG",
+            garden: true,
+            parking: false,
+            status: "Sold Subject to Contract",
+            detail_url: "https://www.royston-lund.co.uk/property/32926983"
+          },
+          {
+            property_id: "34187182",
+            ld_name: "Strode House, Lichfield Street",
+            ld_image: "https://www.royston-lund.co.uk/resize/34187182/0/1024",
+            price_text: "£84,950",
+            price_amount: 84950,
+            bedrooms: 1,
+            bathrooms: 1,
+            property_type: "Flat",
+            postcode: "B79 7BG",
+            garden: true,
+            parking: true,
+            status: "Sold Subject to Contract",
+            detail_url: "https://www.royston-lund.co.uk/property/34187182"
+          },
+          {
+            property_id: "12345678",
+            ld_name: "Test Property, Birmingham",
+            ld_image: "https://via.placeholder.com/400x300",
+            price_text: "£150,000",
+            price_amount: 150000,
+            bedrooms: 2,
+            bathrooms: 1,
+            property_type: "House",
+            postcode: "B1 1AA",
+            garden: true,
+            parking: true,
+            status: "For Sale",
+            detail_url: "https://example.com"
+          }
+        ],
+        filters_applied: {
+          postcode: "DY4",
+          max_price: 100000
+        },
+        total_results: 47,
+        showing: 3
+      };
+      
+      window.openai.toolOutput = currentToolOutput;
+      dispatchSetGlobals({ toolOutput: currentToolOutput });
+      console.log('Sample data loaded');
+    };
+
+    window.clearData = () => {
+      currentToolOutput = null;
+      window.openai.toolOutput = null;
+      dispatchSetGlobals({ toolOutput: null });
+      console.log('Data cleared');
+    };
+
+    // Load sample data on start
+    setTimeout(() => {
+      window.loadSampleData();
+    }, 500);
+  </script>
+
+  <script type="module" src="dist/component.js"></script>
+</body>
+</html>
