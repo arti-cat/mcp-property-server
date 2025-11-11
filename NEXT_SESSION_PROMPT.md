@@ -106,12 +106,15 @@ Once connected, try these in ChatGPT:
 
 **IMPORTANT: Always verify against official docs!**
 
-- ChatGPT MCP Guide: https://platform.openai.com/docs/mcp
-- Developer Mode Guide: https://platform.openai.com/docs/guides/developer-mode
 - FastMCP Docs: https://gofastmcp.com
 - FastMCP LLMs: https://gofastmcp.com/llms.txt
+- FastMCP Testing: https://gofastmcp.com/patterns/testing
+- FastMCP Transports: https://gofastmcp.com/deployment/running-server
 - MCP Protocol: https://modelcontextprotocol.io
 - MCP Protocol LLMs: https://modelcontextprotocol.io/llms-full.txt
+- FastMCP GitHub: https://github.com/jlowin/fastmcp
+- ChatGPT MCP Guide: https://platform.openai.com/docs/mcp
+- Developer Mode Guide: https://platform.openai.com/docs/guides/developer-mode
 
 ## Success Criteria
 

@@ -108,6 +108,8 @@ When adding features or debugging:
 - MCP Protocol: https://modelcontextprotocol.io
 - MCP Protocol LLMs: https://modelcontextprotocol.io/llms-full.txt
 - FastMCP GitHub: https://github.com/jlowin/fastmcp
+- ChatGPT MCP Guide: https://platform.openai.com/docs/mcp
+- Developer Mode Guide: https://platform.openai.com/docs/guides/developer-mode
 
 ## Future Me / Future AI
 
