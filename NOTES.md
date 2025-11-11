@@ -102,9 +102,11 @@ When adding features or debugging:
 ## Resources
 
 - FastMCP Docs: https://gofastmcp.com
+- FastMCP LLMs: https://gofastmcp.com/llms.txt
 - FastMCP Testing: https://gofastmcp.com/patterns/testing
 - FastMCP Transports: https://gofastmcp.com/deployment/running-server
 - MCP Protocol: https://modelcontextprotocol.io
+- MCP Protocol LLMs: https://modelcontextprotocol.io/llms-full.txt
 - FastMCP GitHub: https://github.com/jlowin/fastmcp
 
 ## Future Me / Future AI
