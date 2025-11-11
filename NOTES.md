@@ -111,6 +111,45 @@ When adding features or debugging:
 - ChatGPT MCP Guide: https://platform.openai.com/docs/mcp
 - Developer Mode Guide: https://platform.openai.com/docs/guides/developer-mode
 
+## ChatGPT Integration (Completed)
+
+### What We Did
+
+Successfully connected the Property MCP Server to ChatGPT Chat Mode:
+
+1. ✅ Added `readOnlyHint` annotations to all 3 tools
+2. ✅ Deployed server with HTTP transport on port 8000
+3. ✅ Exposed via ngrok: `https://unblemished-kaycee-downily.ngrok-free.dev`
+4. ✅ Updated README with ChatGPT setup instructions
+
+### Key Learnings
+
+**Read-Only Hint Annotation:**
+- Use `@mcp.tool(annotations={"readOnlyHint": True})` for read-only tools
+- Skips confirmation prompts in ChatGPT
+- Makes conversations smoother
+- Perfect for queries, calculations, and read operations
+
+**ChatGPT Requirements (from official docs):**
+- Developer Mode must be enabled in ChatGPT Settings → Connectors → Advanced
+- Available for ChatGPT Pro, Team, Enterprise, and Edu users
+- MCP endpoint must be at `/mcp/` (FastMCP handles this automatically)
+- Connector must be explicitly enabled in each chat session
+
+**Deployment:**
+- Server runs on `http://127.0.0.1:8000`
+- Exposed via ngrok for public access
+- Health check endpoint at `/health` confirms server is running
+- All 3 tools work perfectly in Chat Mode
+
+### Testing in ChatGPT
+
+Once connected, users can ask natural language questions:
+- "Show me properties in DY4 7LG under £100,000"
+- "Find flats with parking"
+- "What's the average price for 2-bedroom properties?"
+- "Show me properties with gardens"
+
 ## Future Me / Future AI
 
 If you're debugging or adding features:
@@ -120,5 +159,6 @@ If you're debugging or adding features:
 3. **Verify protocol compliance** if working with transports
 4. **Use FastMCP Client for testing** - Not curl
 5. **Session management is normal** - Not a bug
+6. **ChatGPT integration is straightforward** - Just add readOnlyHint and deploy
 
 The time spent reading documentation upfront saves hours of debugging later.

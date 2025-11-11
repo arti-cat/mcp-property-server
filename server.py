@@ -9,12 +9,12 @@ mcp = FastMCP(
 )
 
 # --- 2. Register Your Tools ---
-@mcp.tool
+@mcp.tool(annotations={"readOnlyHint": True})
 def get_schema() -> dict:
     """Returns the data schema for property listings."""
     return tools.get_schema()
 
-@mcp.tool
+@mcp.tool(annotations={"readOnlyHint": True})
 def query_listings(
     postcode: str | None = None,
     property_type: str | None = None,
@@ -35,7 +35,7 @@ def query_listings(
         limit=limit
     )
 
-@mcp.tool
+@mcp.tool(annotations={"readOnlyHint": True})
 def calculate_average_price(
     postcode: str | None = None,
     property_type: str | None = None

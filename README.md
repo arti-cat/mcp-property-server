@@ -89,7 +89,58 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 }
 ```
 
+## ChatGPT Setup
+
+### Requirements
+
+- ChatGPT Pro, Team, Enterprise, or Edu account
+- Developer Mode enabled in ChatGPT settings
+
+### Setup Steps
+
+1. **Start the server with HTTP transport:**
+
+   ```bash
+   python3 server.py --http
+   ```
+
+2. **Expose with ngrok:**
+
+   ```bash
+   ngrok http 8000
+   ```
+
+   Note your public URL (e.g., `https://abc123.ngrok-free.dev`)
+
+3. **Enable Developer Mode in ChatGPT:**
+   - Go to **Settings** → **Connectors**
+   - Under **Advanced**, toggle **Developer Mode** to enabled
+
+4. **Create Connector:**
+   - In **Settings** → **Connectors**, click **Create**
+   - **Name**: Property Server
+   - **Server URL**: `https://your-ngrok-url.ngrok-free.dev/mcp/`
+   - Check **I trust this provider**
+   - Click **Create**
+
+5. **Use in Chat:**
+   - Start a new chat
+   - Click **+** → **More** → **Developer Mode**
+   - Enable your Property Server connector
+   - Ask questions like:
+     - "Show me properties in DY4 7LG under £100,000"
+     - "Find flats with parking"
+     - "What's the average price for 2-bedroom properties?"
+
+### Features
+
+- ✅ All 3 tools have `readOnlyHint` annotations (no confirmation prompts)
+- ✅ Natural language queries
+- ✅ 475 property listings
+- ✅ Filter by postcode, type, price, bedrooms, garden, parking
+
 ## Resources
 
 - [FastMCP Documentation](https://gofastmcp.com)
+- [ChatGPT MCP Integration](https://gofastmcp.com/integrations/chatgpt.md)
 - [MCP Protocol](https://modelcontextprotocol.io)
