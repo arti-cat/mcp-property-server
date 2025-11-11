@@ -61,8 +61,11 @@ def query_listings(
             continue
             
         # For string-based searches, we can check if it's 'contained'
-        if postcode is not None and listing.get('postcode') != postcode:
-            continue
+        # Postcode: check if listing postcode starts with the search term (e.g., "LE65" matches "LE65 1DA")
+        if postcode is not None:
+            listing_postcode = listing.get('postcode', '')
+            if not listing_postcode.upper().startswith(postcode.upper()):
+                continue
         if property_type is not None and property_type.lower() not in listing.get('property_type', '').lower():
             continue
             
@@ -93,8 +96,11 @@ def calculate_average_price(
 
     for listing in all_listings:
         # Check if the listing matches our filters
-        if postcode is not None and listing.get('postcode') != postcode:
-            continue
+        # Postcode: check if listing postcode starts with the search term
+        if postcode is not None:
+            listing_postcode = listing.get('postcode', '')
+            if not listing_postcode.upper().startswith(postcode.upper()):
+                continue
         if property_type is not None and property_type.lower() not in listing.get('property_type', '').lower():
             continue
         
