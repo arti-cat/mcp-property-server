@@ -1,0 +1,27 @@
+Add FastMCP server with multiple transports and comprehensive testing
+
+Features:
+- 3 MCP tools: get_schema, query_listings, calculate_average_price
+- Multiple transport support: STDIO (default), HTTP
+- Health check endpoint for HTTP transport
+- Session management for HTTP transport (MCP protocol compliant)
+- 475 property listings from JSONL data
+
+Testing:
+- Pytest test suite (13 tests) using FastMCP Client (official approach)
+- HTTP endpoint test script with proper MCP session initialization
+- SSE response parsing
+
+Files added:
+- server.py: Main FastMCP server with transport selection
+- tools.py: Tool implementations
+- data_loader.py: JSONL data loading
+- test_server.py: Pytest test suite
+- test_endpoints.sh: HTTP transport testing script
+- requirements.txt: Dependencies (fastmcp[http], pytest, pytest-asyncio)
+- pytest.ini: Pytest configuration
+- README.md: Clear, simple documentation
+
+Transport support:
+- STDIO: For Claude Desktop, Cursor (default)
+- HTTP: For remote access with Streamable HTTP protocol
