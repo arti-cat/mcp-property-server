@@ -84,8 +84,8 @@ def calculate_average_price(
 ) -> Dict[str, Any]:
     """
     Use this when the user asks about average prices, price trends, or typical costs in an area.
- Calculates the average price for properties matching the given postcode or property type.
- Provide at least one filter (postcode or property_type).
+    Calculates the average price for properties matching the given postcode or property type.
+    Provide at least one filter (postcode or property_type).
 
     Args:
         postcode: Partial or full UK postcode (e.g., "LE65" for all LE65 postcodes, "DY4 7LG" for specific area). Case-insensitive.
