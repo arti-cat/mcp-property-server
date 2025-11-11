@@ -1,8 +1,8 @@
-# Next Session: Connect Property Server to ChatGPT
+# Next Session: Connect Property Server to ChatGPT Chat Mode
 
 ## Objective
 
-Extend the Property MCP Server to work with ChatGPT in both Chat Mode and Deep Research Mode using HTTP transport.
+Connect the Property MCP Server to ChatGPT Chat Mode using HTTP transport and ngrok.
 
 ## Current State
 
@@ -12,80 +12,30 @@ We have a working FastMCP server with:
 - ✅ 475 property listings in JSONL format
 - ✅ Comprehensive tests and documentation
 
-## What We Need to Add
+## What We Need to Do
 
-### For ChatGPT Chat Mode
-Our existing tools should work, but we need to:
-1. Deploy server with public URL (using ngrok)
-2. Add `readOnlyHint` annotations to read-only tools
-3. Test connection with ChatGPT Developer Mode
+Our existing 3 tools will work perfectly in Chat Mode! We just need to:
 
-### For ChatGPT Deep Research Mode
-We MUST implement these two specific tools:
+1. ✅ Add `readOnlyHint` annotations (skip confirmation prompts)
+2. ✅ Deploy server with ngrok (public URL)
+3. ✅ Enable Developer Mode in ChatGPT
+4. ✅ Create connector and test
 
-```python
-@mcp.tool()
-def search(query: str) -> dict:
-    """
-    Search for properties matching the query.
-    Must return {"ids": [list of string IDs]}
-    """
-    # Search through 475 properties
-    # Return matching property_ids
-    return {"ids": ["prop1", "prop2", "prop3"]}
-
-@mcp.tool()
-def fetch(id: str) -> dict:
-    """
-    Fetch a complete property record by ID.
-    Return the full property data for ChatGPT to analyze.
-    """
-    # Fetch property by property_id
-    return {
-        "id": id,
-        "title": "Property Title",
-        "content": "Full property details...",
-        "metadata": {...}
-    }
-```
+**No new tools required!** Chat Mode works with any tools you define.
 
 ## Requirements from ChatGPT Documentation
 
-**Chat Mode:**
-- ✅ HTTP transport on public URL
-- ✅ MCP endpoint at `/mcp/`
-- ⚠️ Need Developer Mode enabled in ChatGPT
-- ⚠️ Need to add `readOnlyHint` annotations
+**Chat Mode Requirements:**
+- ✅ HTTP transport on public URL (we have this)
+- ✅ MCP endpoint at `/mcp/` (we have this)
+- ⚠️ Developer Mode must be enabled in ChatGPT Settings
+- ⚠️ Add `readOnlyHint` annotations to skip confirmations
 
-**Deep Research Mode:**
-- ❌ MUST have `search` tool returning `{"ids": [...]}`
-- ❌ MUST have `fetch` tool returning full record
-- ⚠️ Without these, ChatGPT will reject the server
+**Note:** Deep Research Mode requires `search` and `fetch` tools, but we're focusing on Chat Mode first. We can add Deep Research later if needed.
 
 ## Tasks for Next Session
 
-### 1. Add ChatGPT-Compatible Tools
-
-```python
-# In server.py, add these tools:
-
-@mcp.tool()
-def search(query: str) -> dict:
-    """Search for properties matching the query."""
-    # Use existing query_listings logic
-    # Extract property_ids from results
-    # Return {"ids": [list of ids]}
-    pass
-
-@mcp.tool()
-def fetch(id: str) -> dict:
-    """Fetch complete property record by ID."""
-    # Find property by property_id
-    # Return full property data with metadata
-    pass
-```
-
-### 2. Add Read-Only Annotations
+### 1. Add Read-Only Annotations
 
 ```python
 @mcp.tool(annotations={"readOnlyHint": True})
@@ -104,7 +54,7 @@ def calculate_average_price(...) -> dict:
     return tools.calculate_average_price(...)
 ```
 
-### 3. Deploy with ngrok
+### 2. Deploy with ngrok
 
 ```bash
 # Terminal 1
@@ -116,65 +66,41 @@ ngrok http 8000
 # Note the public URL: https://abc123.ngrok.io
 ```
 
-### 4. Connect to ChatGPT
+### 3. Connect to ChatGPT
 
-**For Chat Mode:**
 1. Enable Developer Mode in ChatGPT Settings → Connectors → Advanced
 2. Create connector with URL: `https://abc123.ngrok.io/mcp/`
 3. Start new chat → + → More → Developer Mode
 4. Enable the connector
-5. Test: "Show me properties in DY4 7LG"
+5. Test: "Show me properties in DY4 7LG under £100,000"
 
-**For Deep Research:**
-1. Same connector setup
-2. Start new chat → + → Deep Research
-3. Select Property Server as source
-4. Test: "Research property prices in DY4 7LG area"
+### 4. Test and Verify
 
-### 5. Test and Verify
-
-- [ ] Chat Mode works with existing tools
-- [ ] Deep Research finds properties via `search`
-- [ ] Deep Research retrieves details via `fetch`
-- [ ] Citations work properly
-- [ ] Read-only tools skip confirmations
+- [ ] Server accessible via ngrok URL
+- [ ] Connector created in ChatGPT
+- [ ] Developer Mode enabled in chat
+- [ ] All 3 tools work in conversation
+- [ ] Read-only tools skip confirmation prompts
+- [ ] Can query properties naturally
 
 ## Implementation Notes
 
-### Search Tool Design
+### Read-Only Hint Annotation
 
-The `search` tool should:
-- Parse natural language query
-- Search across: postcode, property_type, price range, bedrooms
-- Return list of matching `property_id` values
-- Format: `{"ids": ["id1", "id2", ...]}`
+The `readOnlyHint` annotation tells ChatGPT that a tool is safe and doesn't modify data:
+- Skips confirmation prompts
+- Makes conversations smoother
+- Use for: queries, calculations, read operations
+- Don't use for: writes, deletes, modifications
 
-### Fetch Tool Design
+### Example Queries to Test
 
-The `fetch` tool should:
-- Look up property by `property_id`
-- Return complete property data
-- Include metadata (price, bedrooms, postcode, etc.)
-- Format for ChatGPT citation
-
-### Data Structure
-
-Our properties have:
-```python
-{
-    "property_id": "string",
-    "price_amount": number,
-    "bedrooms": number,
-    "bathrooms": number,
-    "property_type": "string",
-    "postcode": "string",
-    "garden": boolean,
-    "parking": boolean,
-    "status": "string",
-    "overview": ["list"],
-    "description": "string"
-}
-```
+Once connected, try these in ChatGPT:
+- "Show me all properties in DY4 7LG"
+- "Find flats under £100,000 with parking"
+- "What's the average price for 2-bedroom properties?"
+- "Show me properties with gardens in DY4 7LG"
+- "Get the data schema for properties"
 
 ## Reference Documentation
 
@@ -190,33 +116,36 @@ Our properties have:
 ## Success Criteria
 
 ✅ Server accessible via ngrok public URL
-✅ ChatGPT Chat Mode can use all 5 tools (3 existing + search + fetch)
-✅ ChatGPT Deep Research can search and fetch properties
+✅ ChatGPT Chat Mode can use all 3 tools
 ✅ Read-only tools skip confirmation prompts
-✅ Citations work properly in Deep Research
-✅ Tests updated for new tools
-✅ Documentation updated
+✅ Can query properties naturally in conversation
+✅ Documentation updated with ChatGPT setup
 
 ## Files to Modify
 
-- `server.py` - Add search/fetch tools, add annotations
-- `tools.py` - Implement search/fetch logic
-- `test_server.py` - Add tests for new tools
-- `README.md` - Add ChatGPT setup instructions
+- `server.py` - Add `readOnlyHint` annotations to existing tools
+- `README.md` - Add ChatGPT Chat Mode setup instructions
 - `NOTES.md` - Document ChatGPT integration learnings
+
+## Optional: Add Deep Research Later
+
+If you want Deep Research mode later, you'll need to add:
+- `search(query: str) -> dict` - Returns `{"ids": [...]}`
+- `fetch(id: str) -> dict` - Returns full property record
+
+But for Chat Mode, our existing tools are perfect!
 
 ## Key Reminder
 
 **Check the official ChatGPT MCP documentation first!** Requirements may have changed since this prompt was written. The official docs are the source of truth.
 
-## Questions to Answer
+## Questions to Consider
 
-1. How should we parse natural language queries in `search`?
-2. What format works best for `fetch` results?
-3. Should we keep the existing tools or only use search/fetch?
-4. How to handle authentication if needed?
-5. What's the best way to structure property data for citations?
+1. Should we add authentication for the public ngrok URL?
+2. Do we want to add rate limiting?
+3. Should we log tool usage for analytics?
+4. Any other tools we want to add for ChatGPT?
 
 ## Start the Session With
 
-"I want to extend the Property MCP Server to work with ChatGPT. I have NEXT_SESSION_PROMPT.md with the plan. Let's start by checking the official ChatGPT MCP documentation to verify requirements, then implement the search and fetch tools for Deep Research mode."
+"I want to connect the Property MCP Server to ChatGPT Chat Mode. I have NEXT_SESSION_PROMPT.md with the plan. Let's start by checking the official ChatGPT MCP documentation to verify requirements, then add readOnlyHint annotations to our existing tools and deploy with ngrok."
