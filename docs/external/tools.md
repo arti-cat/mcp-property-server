@@ -1,5 +1,4 @@
-
-Define tools
+# Define tools
 
 Plan and define tools for your assistant.
 Tool-first thinking
@@ -7,7 +6,8 @@ Tool-first thinking
 In Apps SDK, tools are the contract between your MCP server and the model. They describe what the connector can do, how to call it, and what data comes back. Good tool design makes discovery accurate, invocation reliable, and downstream UX predictable.
 
 Use the checklist below to turn your use cases into well-scoped tools before you touch the SDK.
-Draft the tool surface area
+
+## Draft the tool surface area
 
 Start from the user journey defined in your use case research:
 
@@ -16,7 +16,8 @@ Start from the user journey defined in your use case research:
     Predictable outputs – enumerate the structured fields you will return, including machine-readable identifiers that the model can reuse in follow-up calls.
 
 If you need both read and write behavior, create separate tools so ChatGPT can respect confirmation flows for write actions.
-Capture metadata for discovery
+
+## Capture metadata for discovery
 
 Discovery is driven almost entirely by metadata. For each tool, draft:
 
@@ -26,7 +27,8 @@ Discovery is driven almost entirely by metadata. For each tool, draft:
     Global metadata – confirm you have app-level name, icon, and descriptions ready for the directory and launcher.
 
 Later, plug these into your MCP server and iterate using the Optimize metadata workflow.
-Model-side guardrails
+
+## Model-side guardrails
 
 Think through how the model should behave once a tool is linked:
 
@@ -34,7 +36,7 @@ Think through how the model should behave once a tool is linked:
     Read-only hints – set the readOnlyHint annotation for tools that cannot mutate state so ChatGPT can skip confirmation prompts when possible.
     Result components – decide whether each tool should render a component, return JSON only, or both. Setting _meta["openai/outputTemplate"] on the tool descriptor advertises the HTML template to ChatGPT.
 
-Golden prompt rehearsal
+## Golden prompt rehearsal
 
 Before you implement, sanity-check your tool set against the prompt list you captured earlier:
 
@@ -43,7 +45,8 @@ Before you implement, sanity-check your tool set against the prompt list you cap
     For negative prompts, verify your metadata will keep the tool hidden unless the user explicitly opts in (e.g., by naming your product).
 
 Capture any gaps or ambiguities now and adjust the plan—changing metadata before launch is much cheaper than refactoring code later.
-Handoff to implementation
+
+## Handoff to implementation
 
 When you are ready to implement, compile the following into a handoff document:
 
@@ -52,4 +55,4 @@ When you are ready to implement, compile the following into a handoff document:
     Auth requirements, rate limits, and error handling expectations.
     Test prompts that should succeed (and ones that should fail).
 
-Bring this plan into the Set up your server guide to translate it into code with the MCP SDK of your choice.
+## Bring this plan into the Set up your server guide to translate it into code with the MCP SDK of your choice.

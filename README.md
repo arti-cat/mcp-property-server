@@ -2,6 +2,8 @@
 
 A FastMCP server for querying property listings with 475 properties.
 
+**✨ Now with ChatGPT UI Widget!** Interactive property cards with favorites, sorting, and dark mode support.
+
 ## Quick Start
 
 ```bash
@@ -70,6 +72,14 @@ python3 server.py --http
 ├── data_loader.py      # Data loading
 ├── test_server.py      # Pytest tests
 ├── requirements.txt    # Dependencies
+├── web/                # React UI widget (NEW!)
+│   ├── src/            # React components
+│   ├── dist/           # Built bundle
+│   └── test.html       # Local testing
+├── docs/               # Documentation
+│   ├── WIDGET_IMPLEMENTATION_PLAN.md
+│   ├── WIDGET_DEPLOYMENT.md
+│   └── WIDGET_SUMMARY.md
 └── data/
     └── listings.jsonl  # Property data (475 listings)
 ```
@@ -139,8 +149,37 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 - ✅ 475 property listings
 - ✅ Filter by postcode, type, price, bedrooms, garden, parking
 
+## UI Widget
+
+The server now includes an interactive React widget for ChatGPT:
+
+**Features:**
+- 🏠 Property cards with images
+- ❤️ Favorite properties (persisted)
+- 🔄 Sort by price or bedrooms
+- 🌓 Dark mode support
+- 📱 Responsive design
+
+**Quick Start:**
+```bash
+# Build widget
+cd web && npm install && npm run build
+
+# Test locally
+open test.html
+
+# Deploy to ChatGPT
+# See docs/WIDGET_DEPLOYMENT.md
+```
+
+**Documentation:**
+- [Implementation Plan](docs/WIDGET_IMPLEMENTATION_PLAN.md)
+- [Deployment Guide](docs/WIDGET_DEPLOYMENT.md)
+- [Summary](docs/WIDGET_SUMMARY.md)
+
 ## Resources
 
 - [FastMCP Documentation](https://gofastmcp.com)
 - [ChatGPT MCP Integration](https://gofastmcp.com/integrations/chatgpt.md)
+- [ChatGPT Apps SDK](https://platform.openai.com/docs/mcp)
 - [MCP Protocol](https://modelcontextprotocol.io)
