@@ -25,13 +25,23 @@ WIDGET_URI = "ui://widget/property-list.html"
 # --- Load UI bundle ---
 WIDGET_HTML = ""
 widget_path = Path("web/dist/component.js")
+css_path = Path("web/src/styles/index.css")
+
 if widget_path.exists():
     widget_js = widget_path.read_text(encoding="utf-8")
+    
+    # Load CSS if available
+    widget_css = ""
+    if css_path.exists():
+        widget_css = css_path.read_text(encoding="utf-8")
+        print(f"✅ Widget CSS loaded: {len(widget_css):,} bytes")
+    
     WIDGET_HTML = f"""<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>{widget_css}</style>
 </head>
 <body>
     <div id="root"></div>

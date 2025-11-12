@@ -4,8 +4,8 @@
   "description": "React UI component for Property MCP Server",
   "main": "dist/component.js",
   "scripts": {
-    "build": "esbuild src/index.tsx --bundle --format=esm --outfile=dist/component.js --minify --sourcemap",
-    "dev": "esbuild src/index.tsx --bundle --format=esm --outfile=dist/component.js --sourcemap --watch",
+    "build": "esbuild src/index.tsx --bundle --format=esm --outfile=dist/component.js --minify --sourcemap --loader:.css=text",
+    "dev": "esbuild src/index.tsx --bundle --format=esm --outfile=dist/component.js --sourcemap --watch --loader:.css=text",
     "type-check": "tsc --noEmit"
   },
   "keywords": ["mcp", "chatgpt", "property", "widget"],
