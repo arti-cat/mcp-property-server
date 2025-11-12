@@ -4,6 +4,8 @@ A FastMCP server for querying property listings with 475 properties.
 
 **✨ Now with ChatGPT UI Widget!** Interactive property cards with favorites, sorting, and dark mode support.
 
+**🎨 NEW: Reusable Widget Templates!** Complete patterns and templates for building your own ChatGPT widgets. See [WIDGET_PATTERNS_SUMMARY.md](WIDGET_PATTERNS_SUMMARY.md)
+
 ## Quick Start
 
 ```bash
@@ -176,6 +178,22 @@ open test.html
 - [Implementation Plan](docs/WIDGET_IMPLEMENTATION_PLAN.md)
 - [Deployment Guide](docs/WIDGET_DEPLOYMENT.md)
 - [Summary](docs/WIDGET_SUMMARY.md)
+
+## Widget Templates
+
+This project includes **complete reusable templates** for building ChatGPT Apps SDK widgets:
+
+- **[WIDGET_PATTERNS_SUMMARY.md](WIDGET_PATTERNS_SUMMARY.md)** - Overview & quick start
+- **[docs/WIDGET_TEMPLATE_GUIDE.md](docs/WIDGET_TEMPLATE_GUIDE.md)** - Complete implementation guide
+- **[docs/REUSABLE_PATTERNS.md](docs/REUSABLE_PATTERNS.md)** - Quick reference
+- **[docs/ARCHITECTURE_DIAGRAM.md](docs/ARCHITECTURE_DIAGRAM.md)** - System architecture
+- **[docs/create-widget-project.sh](docs/create-widget-project.sh)** - Project generator
+
+**Create a new widget project:**
+```bash
+cd docs
+./create-widget-project.sh my-widget-name
+```
 
 ## Resources
 

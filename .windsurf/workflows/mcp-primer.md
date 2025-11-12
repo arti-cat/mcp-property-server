@@ -1,5 +1,5 @@
 ---
-description: prime-mcp
+description: prime for mcp tasks
 auto_execution_mode: 1
 ---
 
