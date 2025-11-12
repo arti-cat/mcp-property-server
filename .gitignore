@@ -356,3 +356,8 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Log files
+*.log
+server.log
+ngrok.log

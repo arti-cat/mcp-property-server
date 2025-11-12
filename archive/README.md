@@ -137,3 +137,55 @@ For current implementation details, see:
 - `CHATGPT_WIDGET_GUIDE.md` - Complete guide
 - `WIDGET_RENDERING.md` - Success story
 - `README_APPS_SDK.md` - Apps SDK reference
+
+---
+
+## Old Documentation (`old_docs/`)
+
+### APPS_SDK_DEPLOYMENT.md
+**Status:** Superseded  
+**Description:** Step-by-step deployment guide  
+**Why Archived:** Consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+### APPS_SDK_IMPLEMENTATION.md
+**Status:** Superseded  
+**Description:** Implementation details  
+**Why Archived:** Consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+### FINAL_SETUP.md
+**Status:** Superseded  
+**Description:** Final setup instructions  
+**Why Archived:** Consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+### QUICK_START_CHATGPT.md
+**Status:** Superseded  
+**Description:** Quick start guide  
+**Why Archived:** Consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+### README_APPS_SDK.md
+**Status:** Superseded  
+**Description:** Apps SDK reference  
+**Why Archived:** Consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+### IMPROVEMENTS.md
+**Status:** Historical  
+**Description:** Tool description improvements  
+**Why Archived:** Historical record, improvements already applied
+
+### NEXT_SESSION_PROMPT.md
+**Status:** Old Planning  
+**Description:** Next session context  
+**Why Archived:** Session completed, no longer needed
+
+---
+
+## Current Documentation Structure
+
+**Root Directory:**
+- `README.md` - Main project overview
+- `CHATGPT_WIDGET_GUIDE.md` - **Complete guide** (single source of truth)
+- `SUCCESS.md` - Success story (widget recognition)
+- `WIDGET_RENDERING.md` - Success story (widget rendering)
+- `NOTES.md` - Development notes and learnings
+
+**All information consolidated into `CHATGPT_WIDGET_GUIDE.md`**
