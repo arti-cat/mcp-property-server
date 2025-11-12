@@ -142,6 +142,33 @@ For current implementation details, see:
 
 ## Old Documentation (`old_docs/`)
 
+### Widget Documentation (6 files)
+**Status:** Superseded  
+**Why Archived:** All widget documentation consolidated into `CHATGPT_WIDGET_GUIDE.md`
+
+- `WIDGET_DEPLOYMENT.md` - Deployment guide
+- `WIDGET_FIX_SUMMARY.md` - Fix summary
+- `WIDGET_IMPLEMENTATION_PLAN.md` - Implementation plan
+- `WIDGET_NOT_RENDERING_DIAGNOSIS.md` - Troubleshooting
+- `WIDGET_QUICK_START.md` - Quick start
+- `WIDGET_SUMMARY.md` - Summary
+
+### Project Documentation (3 files)
+**Status:** Outdated  
+**Why Archived:** Reference old `server.py`, superseded by current implementation
+
+- `CHATGPT_SETUP.md` - Old ChatGPT setup (references old ngrok URL)
+- `MCP_LEARNINGS.md` - MCP learnings (still useful for reference)
+- `SUMMARY.md` - Old project summary (references `server.py`)
+
+### Testing Documentation (1 file)
+**Status:** Outdated  
+**Why Archived:** Problem already solved in `server_apps_sdk.py`
+
+- `TESTING_APPS_SDK.md` - Apps SDK testing (discusses problems we solved)
+
+### Deployment Documentation (7 files)
+
 ### APPS_SDK_DEPLOYMENT.md
 **Status:** Superseded  
 **Description:** Step-by-step deployment guide  
