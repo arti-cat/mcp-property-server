@@ -74,7 +74,7 @@ def query_listings(
         filtered_results.append(listing)
     
     # Return enhanced response structure for widget
-    return {
+    payload = {
         "properties": filtered_results[:limit],
         "filters_applied": {
             "postcode": postcode,
@@ -82,11 +82,22 @@ def query_listings(
             "max_price": max_price,
             "min_bedrooms": min_bedrooms,
             "has_garden": has_garden,
-            "has_parking": has_parking
+            "has_parking": has_parking,
         },
         "total_results": len(filtered_results),
-        "showing": min(limit, len(filtered_results))
+        "showing": min(limit, len(filtered_results)),
     }
+
+    # For Apps SDK, ChatGPT hydrates the component from `structuredContent`.
+    # Keep top-level keys for backwards-compatibility with existing tests.
+    payload["structuredContent"] = {
+        "properties": payload["properties"],
+        "filters_applied": payload["filters_applied"],
+        "total_results": payload["total_results"],
+        "showing": payload["showing"],
+    }
+
+    return payload
 
 
 def calculate_average_price(
