@@ -4,7 +4,9 @@ A FastMCP server for querying property listings with 475 properties.
 
 **✨ Now with ChatGPT UI Widget!** Interactive property cards with favorites, sorting, and dark mode support.
 
-**🎨 NEW: Reusable Widget Templates!** Complete patterns and templates for building your own ChatGPT widgets. See [WIDGET_PATTERNS_SUMMARY.md](WIDGET_PATTERNS_SUMMARY.md)
+**🎯 NEW: Lead Capture & CRM!** Capture leads, match clients to properties, schedule viewings, and manage your sales pipeline. See [LEAD_CAPTURE_FEATURE.md](LEAD_CAPTURE_FEATURE.md)
+
+**🎨 Reusable Widget Templates!** Complete patterns and templates for building your own ChatGPT widgets. See [WIDGET_PATTERNS_SUMMARY.md](WIDGET_PATTERNS_SUMMARY.md)
 
 ## Quick Start
 
@@ -21,10 +23,12 @@ python3 server.py --http
 
 ## Tools
 
-### get_schema()
+### Property Search Tools
+
+#### get_schema()
 Returns the data schema for property listings.
 
-### query_listings(...)
+#### query_listings(...)
 Search and filter properties.
 
 **Parameters:**
@@ -36,12 +40,45 @@ Search and filter properties.
 - `has_parking` - Must have parking
 - `limit` - Max results (default: 5)
 
-### calculate_average_price(...)
+#### calculate_average_price(...)
 Calculate average price for matching properties.
 
 **Parameters:**
 - `postcode` - Filter by postcode
 - `property_type` - Filter by type
+
+### Lead Capture & CRM Tools
+
+#### capture_lead(...)
+Capture new buyer or seller leads from conversations.
+
+**Parameters:**
+- `full_name`, `email`, `mobile`, `role` (required)
+- `stage` - Lead stage (hot/warm/cold/instructed/completed)
+- `budget_max`, `min_bedrooms` - For buyers
+- `selling_property_id`, `asking_price` - For sellers
+
+#### match_client(...)
+Find properties matching a buyer's preferences.
+
+**Parameters:**
+- `client_id` (required) - Buyer's client ID
+- `limit` - Max results (default: 10)
+
+#### schedule_viewing(...)
+Book property viewings with conflict detection.
+
+**Parameters:**
+- `property_id`, `buyer_client_id`, `datetime_iso` (required)
+- `notes` - Optional viewing notes
+
+#### view_leads(...)
+View and filter client pipeline.
+
+**Parameters:**
+- `role` - Filter by buyer/seller
+- `stage` - Filter by lead stage
+- `limit` - Max results (default: 20)
 
 ## Testing
 

@@ -153,6 +153,81 @@ async def _list_tools() -> List[types.Tool]:
                 "readOnlyHint": True,
             },
         ),
+        types.Tool(
+            name="capture_lead",
+            title="Capture New Lead",
+            description="Use this when someone expresses interest in buying or selling property. Captures their contact details and creates a new client record in the system. Perfect for queries like 'I'm interested in buying', 'I want to sell my property', or when someone provides their contact information. This tool writes data to the system.",
+            inputSchema={
+                "type": "object",
+                "required": ["full_name", "email", "mobile", "role"],
+                "properties": {
+                    "full_name": {"type": "string", "description": "Client's full name (e.g., 'Sarah Mitchell')"},
+                    "email": {"type": "string", "description": "Email address"},
+                    "mobile": {"type": "string", "description": "Mobile phone number (e.g., '+44 7700 900001')"},
+                    "role": {"type": "string", "enum": ["buyer", "seller"], "description": "Either 'buyer' or 'seller'"},
+                    "stage": {"type": "string", "enum": ["hot", "warm", "cold", "instructed", "completed"], "description": "Lead stage (default: 'warm')"},
+                    "budget_max": {"type": "integer", "description": "Maximum budget for buyers (e.g., 95000)"},
+                    "min_bedrooms": {"type": "integer", "description": "Minimum bedrooms for buyers (e.g., 2)"},
+                    "interested_property_id": {"type": "string", "description": "Property ID buyer is interested in"},
+                    "selling_property_id": {"type": "string", "description": "Property ID seller is selling (required for sellers)"},
+                    "asking_price": {"type": "integer", "description": "Asking price for sellers (required for sellers)"}
+                }
+            },
+            annotations={
+                "readOnlyHint": False,
+            },
+        ),
+        types.Tool(
+            name="match_client",
+            title="Match Client to Properties",
+            description="Use this when you want to find properties that match a buyer's preferences and budget. Takes a client ID and returns matching properties in the property widget. Perfect for queries like 'show properties for client C0001', 'find matches for Sarah', or 'what properties fit this buyer's needs?'. Only works for buyers, not sellers.",
+            inputSchema={
+                "type": "object",
+                "required": ["client_id"],
+                "properties": {
+                    "client_id": {"type": "string", "description": "The buyer's client ID (e.g., 'C0001')"},
+                    "limit": {"type": "integer", "description": "Maximum number of results (default: 10)", "default": 10}
+                }
+            },
+            _meta=_tool_meta(),
+            annotations={
+                "readOnlyHint": True,
+            },
+        ),
+        types.Tool(
+            name="schedule_viewing",
+            title="Schedule Property Viewing",
+            description="Use this when a buyer wants to view a property. Books a viewing appointment and updates both buyer and seller records. Validates property availability and checks for scheduling conflicts. Perfect for queries like 'book a viewing for property 32926983', 'schedule viewing for client C0001', or 'arrange property visit'. This tool writes data to the system.",
+            inputSchema={
+                "type": "object",
+                "required": ["property_id", "buyer_client_id", "datetime_iso"],
+                "properties": {
+                    "property_id": {"type": "string", "description": "Property ID to view (e.g., '32926983')"},
+                    "buyer_client_id": {"type": "string", "description": "Buyer's client ID (e.g., 'C0001')"},
+                    "datetime_iso": {"type": "string", "description": "Viewing datetime in ISO format (e.g., '2025-11-20T14:00:00Z')"},
+                    "notes": {"type": "string", "description": "Optional notes about the viewing"}
+                }
+            },
+            annotations={
+                "readOnlyHint": False,
+            },
+        ),
+        types.Tool(
+            name="view_leads",
+            title="View Client Leads",
+            description="Use this when an estate agent wants to view their client pipeline, review leads, or check client status. Returns filtered list of buyers and sellers with their details, viewings, and stage. Perfect for queries like 'show me all hot leads', 'list buyer leads', 'show sellers', or 'view my pipeline'. Internal tool for agents.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "role": {"type": "string", "enum": ["buyer", "seller"], "description": "Filter by 'buyer' or 'seller' (optional)"},
+                    "stage": {"type": "string", "enum": ["hot", "warm", "cold", "instructed", "completed"], "description": "Filter by stage (optional)"},
+                    "limit": {"type": "integer", "description": "Maximum number of results (default: 20)", "default": 20}
+                }
+            },
+            annotations={
+                "readOnlyHint": True,
+            },
+        ),
     ]
 
 # --- Register Resources with Apps SDK metadata ---
@@ -251,6 +326,103 @@ async def _call_tool_request(req: types.CallToolRequest) -> types.ServerResult:
                         text=json.dumps(result, indent=2),
                     )
                 ],
+            )
+        )
+    
+    elif tool_name == "capture_lead":
+        result = tools.capture_lead(
+            full_name=arguments.get("full_name"),
+            email=arguments.get("email"),
+            mobile=arguments.get("mobile"),
+            role=arguments.get("role"),
+            stage=arguments.get("stage", "warm"),
+            budget_max=arguments.get("budget_max"),
+            min_bedrooms=arguments.get("min_bedrooms"),
+            interested_property_id=arguments.get("interested_property_id"),
+            selling_property_id=arguments.get("selling_property_id"),
+            asking_price=arguments.get("asking_price")
+        )
+        
+        if "error" in result:
+            return types.ServerResult(
+                types.CallToolResult(
+                    content=[types.TextContent(type="text", text=result["error"])],
+                    isError=True,
+                )
+            )
+        
+        return types.ServerResult(
+            types.CallToolResult(
+                content=[types.TextContent(type="text", text=result["message"])],
+                structuredContent=result.get("structuredContent", result),
+                _meta={"openai/toolInvocation/invoked": "Lead captured"},
+            )
+        )
+    
+    elif tool_name == "match_client":
+        result = tools.match_client(
+            client_id=arguments.get("client_id"),
+            limit=arguments.get("limit", 10)
+        )
+        
+        if "error" in result:
+            return types.ServerResult(
+                types.CallToolResult(
+                    content=[types.TextContent(type="text", text=result["error"])],
+                    isError=True,
+                )
+            )
+        
+        # Reuses property widget format
+        return types.ServerResult(
+            types.CallToolResult(
+                content=[
+                    types.TextContent(
+                        type="text",
+                        text=f"Found {result['total_results']} matching properties for {result['filters_applied']['client_name']}.",
+                    )
+                ],
+                structuredContent=result.get("structuredContent", result),
+                _meta={"openai/toolInvocation/invoked": "Found matches"},
+            )
+        )
+    
+    elif tool_name == "schedule_viewing":
+        result = tools.schedule_viewing(
+            property_id=arguments.get("property_id"),
+            buyer_client_id=arguments.get("buyer_client_id"),
+            datetime_iso=arguments.get("datetime_iso"),
+            notes=arguments.get("notes")
+        )
+        
+        if "error" in result:
+            return types.ServerResult(
+                types.CallToolResult(
+                    content=[types.TextContent(type="text", text=result["error"])],
+                    isError=True,
+                )
+            )
+        
+        return types.ServerResult(
+            types.CallToolResult(
+                content=[types.TextContent(type="text", text=result["message"])],
+                structuredContent=result.get("structuredContent", result),
+                _meta={"openai/toolInvocation/invoked": "Viewing scheduled"},
+            )
+        )
+    
+    elif tool_name == "view_leads":
+        result = tools.view_leads(
+            role=arguments.get("role"),
+            stage=arguments.get("stage"),
+            limit=arguments.get("limit", 20)
+        )
+        
+        return types.ServerResult(
+            types.CallToolResult(
+                content=[types.TextContent(type="text", text=result["message"])],
+                structuredContent=result.get("structuredContent", result),
+                _meta={"openai/toolInvocation/invoked": "Leads retrieved"},
             )
         )
     
