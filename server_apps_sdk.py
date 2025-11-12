@@ -68,17 +68,39 @@ async def _list_tools() -> List[types.Tool]:
         types.Tool(
             name="query_listings",
             title="Search Property Listings",
-            description="Search and filter 475 property listings by location, price, bedrooms, garden, and parking.",
+            description="Use this when the user wants to find, search, browse, or view properties for sale in the UK. Searches 475 property listings with filters for location (postcode like 'DY4' or 'LE65'), price range, number of bedrooms, garden availability, parking availability, and property type. Perfect for queries like 'find properties in Ashby', 'show me 2-bed houses under £200k', 'properties with gardens in DY4', or 'flats with parking'. Do not use for property valuations, mortgage calculations, or rental properties.",
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "postcode": {"type": "string", "description": "Partial or full UK postcode (e.g., 'DY4' or 'LE65')"},
-                    "property_type": {"type": "string", "description": "Type of property (e.g., 'Flat', 'House')"},
-                    "max_price": {"type": "integer", "description": "Maximum price in GBP"},
-                    "min_bedrooms": {"type": "integer", "description": "Minimum number of bedrooms"},
-                    "has_garden": {"type": "boolean", "description": "Must have garden"},
-                    "has_parking": {"type": "boolean", "description": "Must have parking"},
-                    "limit": {"type": "integer", "description": "Max results (default: 5)", "default": 5}
+                    "postcode": {
+                        "type": "string", 
+                        "description": "Partial or full UK postcode to filter by location. Examples: 'DY4', 'LE65', 'DY4 7LG'. Leave empty to search all locations."
+                    },
+                    "property_type": {
+                        "type": "string", 
+                        "description": "Type of property to filter by. Examples: 'Flat', 'House', 'Bungalow', 'Detached', 'Semi-Detached', 'Terraced'. Leave empty for all types."
+                    },
+                    "max_price": {
+                        "type": "integer", 
+                        "description": "Maximum price in GBP (British Pounds). Example: 200000 for properties under £200,000. Leave empty for no maximum."
+                    },
+                    "min_bedrooms": {
+                        "type": "integer", 
+                        "description": "Minimum number of bedrooms required. Examples: 2 for 2+ bedrooms, 3 for 3+ bedrooms. Leave empty for any number."
+                    },
+                    "has_garden": {
+                        "type": "boolean", 
+                        "description": "Set to true to only show properties with a garden. Leave empty or false for all properties."
+                    },
+                    "has_parking": {
+                        "type": "boolean", 
+                        "description": "Set to true to only show properties with parking. Leave empty or false for all properties."
+                    },
+                    "limit": {
+                        "type": "integer", 
+                        "description": "Maximum number of results to return. Default is 5. Use higher values (10-20) for broader searches.",
+                        "default": 5
+                    }
                 }
             },
             _meta=_tool_meta(),
@@ -90,8 +112,8 @@ async def _list_tools() -> List[types.Tool]:
         ),
         types.Tool(
             name="get_schema",
-            title="Get Property Schema",
-            description="Returns the data schema for property listings showing all searchable fields.",
+            title="Get Property Data Schema",
+            description="Use this when the user asks about what property information is available, what fields can be searched, or what data structure is returned. Returns the complete schema showing all searchable fields like price, bedrooms, postcode, garden, parking, property type, etc. Do not use for actual property searches - use query_listings instead.",
             inputSchema={
                 "type": "object",
                 "properties": {}
@@ -102,13 +124,19 @@ async def _list_tools() -> List[types.Tool]:
         ),
         types.Tool(
             name="calculate_average_price",
-            title="Calculate Average Price",
-            description="Calculate average price for properties matching the given postcode or property type.",
+            title="Calculate Average Property Price",
+            description="Use this when the user asks about average prices, typical costs, price trends, or market values in a specific area or for a specific property type. Calculates the average price for properties matching the given postcode or property type. Perfect for queries like 'what's the average price in LE65?', 'how much do flats cost?', 'average property prices in Ashby', or 'typical house prices in DY4'. Do not use for finding specific properties - use query_listings instead.",
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "postcode": {"type": "string", "description": "Partial or full UK postcode"},
-                    "property_type": {"type": "string", "description": "Type of property"}
+                    "postcode": {
+                        "type": "string", 
+                        "description": "Partial or full UK postcode to calculate average for. Examples: 'DY4', 'LE65'. Leave empty to calculate across all locations."
+                    },
+                    "property_type": {
+                        "type": "string", 
+                        "description": "Type of property to calculate average for. Examples: 'Flat', 'House', 'Bungalow'. Leave empty to calculate across all types."
+                    }
                 }
             },
             annotations={
@@ -236,6 +264,83 @@ mcp._mcp_server.request_handlers[types.ReadResourceRequest] = _handle_read_resou
 # --- Create Streamable HTTP App ---
 app = mcp.streamable_http_app()
 
+# --- Add Test Endpoints ---
+from starlette.responses import HTMLResponse, JSONResponse
+from starlette.routing import Route
+
+async def serve_widget_test(request):
+    """Serve the widget HTML for browser testing."""
+    if not WIDGET_HTML:
+        return HTMLResponse("<h1>Widget not loaded</h1><p>Run: cd web && npm run build</p>", status_code=404)
+    return HTMLResponse(WIDGET_HTML)
+
+async def serve_test_data(request):
+    """Serve test data to simulate tool output."""
+    result = tools.query_listings(postcode="DY4", max_price=100000, limit=5)
+    return JSONResponse(result)
+
+async def serve_index(request):
+    """Serve a test page with links."""
+    widget_status = "Loaded" if WIDGET_HTML else "Not loaded"
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Property MCP Server - Test Page</title>
+    <style>
+        body {{ font-family: system-ui; max-width: 800px; margin: 50px auto; padding: 20px; }}
+        h1 {{ color: #333; }}
+        .status {{ padding: 10px; background: #e8f5e9; border-radius: 5px; margin: 20px 0; }}
+        .links {{ display: flex; flex-direction: column; gap: 10px; }}
+        a {{ padding: 10px 15px; background: #2196F3; color: white; text-decoration: none; border-radius: 5px; }}
+        a:hover {{ background: #1976D2; }}
+        code {{ background: #f5f5f5; padding: 2px 5px; border-radius: 3px; }}
+    </style>
+</head>
+<body>
+    <h1>Property MCP Server</h1>
+    
+    <div class="status">
+        <strong>Status:</strong> Running<br>
+        <strong>Widget:</strong> {widget_status}<br>
+        <strong>Port:</strong> 8000<br>
+        <strong>Mode:</strong> Apps SDK
+    </div>
+    
+    <h2>Test Endpoints</h2>
+    <div class="links">
+        <a href="/widget" target="_blank">📱 View Widget (opens in new tab)</a>
+        <a href="/test-data" target="_blank">📊 View Test Data (JSON)</a>
+        <a href="/mcp/" target="_blank">🔌 MCP Endpoint</a>
+    </div>
+    
+    <h2>Widget Testing</h2>
+    <p>The widget at <code>/widget</code> will show "Loading..." because it expects data from <code>window.openai.toolOutput</code>.</p>
+    <p>In ChatGPT, the widget receives data automatically. For browser testing, you can:</p>
+    <ol>
+        <li>Open browser DevTools (F12)</li>
+        <li>Check Console for any errors</li>
+        <li>Verify the React component loads</li>
+    </ol>
+    
+    <h2>ChatGPT Integration</h2>
+    <p>To use with ChatGPT:</p>
+    <ol>
+        <li>Expose with ngrok: <code>ngrok http 8000</code></li>
+        <li>Create connector in ChatGPT with URL: <code>https://your-url.ngrok.io/mcp/</code></li>
+        <li>Ask: "Show me properties in DY4 under £100,000"</li>
+    </ol>
+</body>
+</html>"""
+    return HTMLResponse(html)
+
+# Add routes to the app
+app.routes.extend([
+    Route("/", serve_index),
+    Route("/widget", serve_widget_test),
+    Route("/test-data", serve_test_data),
+])
+
 # --- Add CORS for ChatGPT ---
 try:
     from starlette.middleware.cors import CORSMiddleware
@@ -262,7 +367,10 @@ if __name__ == "__main__":
     print(f"Transport: Streamable HTTP (ChatGPT compatible)")
     print()
     print("Endpoints:")
-    print(f"  MCP: http://0.0.0.0:8000/mcp/")
+    print(f"  Home:        http://localhost:8000/")
+    print(f"  Widget Test: http://localhost:8000/widget")
+    print(f"  Test Data:   http://localhost:8000/test-data")
+    print(f"  MCP:         http://localhost:8000/mcp/")
     print()
     print("Widget Status:")
     if WIDGET_HTML:
@@ -270,7 +378,12 @@ if __name__ == "__main__":
     else:
         print(f"  ❌ Not loaded - run: cd web && npm run build")
     print()
-    print("Next Steps:")
+    print("Browser Testing:")
+    print("  1. Open: http://localhost:8000/")
+    print("  2. Click 'View Widget' to test in browser")
+    print("  3. Open DevTools (F12) to check for errors")
+    print()
+    print("ChatGPT Integration:")
     print("  1. Expose with ngrok: ngrok http 8000")
     print("  2. In ChatGPT, create connector with: https://your-url.ngrok.io/mcp/")
     print("  3. Test with: 'Show me properties in DY4 under £100,000'")
