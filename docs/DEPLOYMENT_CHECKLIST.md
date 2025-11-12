@@ -1,237 +1,173 @@
-# Lead Capture Feature - Deployment Checklist
+# Pre-Deployment Checklist
 
-## Pre-Deployment Verification
+Use this checklist before deploying to production.
 
-### ✅ Code Complete
-- [x] 4 new tools implemented in `tools.py`
-- [x] Tools registered in `server_apps_sdk.py`
-- [x] Data loader updated with client management
-- [x] Client dataset created (`data/clients.jsonl`)
-- [x] All tests passing
+## ✅ Pre-Deployment
 
-### ✅ Documentation
-- [x] `LEAD_CAPTURE_FEATURE.md` - Complete feature documentation
-- [x] `IMPLEMENTATION_SUMMARY.md` - Implementation overview
-- [x] `README.md` - Updated with new tools
-- [x] `test_lead_tools.py` - Test suite
+### Code & Build
+- [ ] Widget built: `ls -lh web/dist/component.js`
+- [ ] All tests passing: `python3 -m pytest test_server.py -v`
+- [ ] No uncommitted changes: `git status`
+- [ ] Latest code pushed: `git push origin main`
 
-### ✅ Data Files
-- [x] `data/clients.jsonl` - 10 sample clients (6 buyers, 4 sellers)
-- [x] `data/listings.jsonl` - 475 properties (existing)
+### Configuration
+- [ ] `Dockerfile` present
+- [ ] `fly.toml` configured (or platform equivalent)
+- [ ] `.dockerignore` configured
+- [ ] Environment variables documented
 
----
-
-## Deployment Steps
-
-### 1. Start Server
-```bash
-cd /home/bch/dev/projects/property/mcp-property-server
-python3 server_apps_sdk.py
-```
-
-**Expected output:**
-```
-✅ Successfully loaded 475 records from data/listings.jsonl
-✅ Successfully loaded 10 records from data/clients.jsonl
-✅ Widget CSS loaded: 4,564 bytes
-✅ Widget bundle loaded: 149,315 bytes
-INFO: Started server process
-```
-
-### 2. Expose with ngrok
-```bash
-ngrok http 8000
-```
-
-**Note your public URL:** `https://your-url.ngrok-free.dev`
-
-### 3. Create/Update ChatGPT Connector
-- Go to ChatGPT Settings → Connectors
-- Update existing "Property Server" or create new connector
-- **Server URL:** `https://your-url.ngrok-free.dev/mcp/`
-- Check "I trust this provider"
-- Save
-
-### 4. Enable in Chat
-- Start new ChatGPT chat
-- Click **+** → **More** → **Developer Mode**
-- Enable "Property Server" connector
+### Testing
+- [ ] Local server runs: `python3 server_apps_sdk.py --http`
+- [ ] Health endpoint works: `curl http://localhost:8000/health`
+- [ ] Widget renders locally: Open `http://localhost:8000/widget`
+- [ ] All tools tested via ChatGPT (local ngrok)
 
 ---
 
-## Testing in ChatGPT
+## 🚀 Deployment
 
-### Test 1: View Leads
-```
-"Show me all leads"
-```
-**Expected:** List of 10 clients with summary stats
+### Platform Setup
+- [ ] Fly CLI installed: `flyctl version`
+- [ ] Authenticated: `flyctl auth whoami`
+- [ ] App created: `flyctl launch --no-deploy` (first time only)
 
-### Test 2: Filter Leads
-```
-"Show me hot leads"
-```
-**Expected:** 3 hot leads (Sarah Mitchell, Priya Sharma, Aisha Khan)
-
-### Test 3: Match Client
-```
-"Find properties for client C0001"
-```
-**Expected:** Property widget with matching properties for Sarah Mitchell
-
-### Test 4: Capture Lead
-```
-"I'm interested in buying a property. My name is Test User, 
-email test@example.com, mobile +44 7700 999999, 
-budget £100,000, need 2 bedrooms"
-```
-**Expected:** New client C0012 created (or next available ID)
-
-### Test 5: Schedule Viewing
-```
-"Book a viewing for property 34203646 for client C0001 
-on November 25th at 3pm"
-```
-**Expected:** Viewing created, confirmation message
-
-### Test 6: Property Search (existing)
-```
-"Show me properties under £100,000 with 2 bedrooms"
-```
-**Expected:** Property widget with matching properties
-
-### Test 7: Calculate Average (existing)
-```
-"What's the average price in DY4?"
-```
-**Expected:** Average price calculation
+### Deploy
+- [ ] Run deployment: `./deploy.sh` or `flyctl deploy`
+- [ ] Deployment successful (no errors)
+- [ ] App status healthy: `flyctl status`
 
 ---
 
-## Tool Inventory
+## ✅ Post-Deployment
 
-### Property Search Tools (3)
-1. ✅ `get_schema` - Get data schema
-2. ✅ `query_listings` - Search properties
-3. ✅ `calculate_average_price` - Calculate averages
+### Verification
+- [ ] Health check passes: `curl https://your-app.fly.dev/health`
+- [ ] MCP endpoint responds: `curl https://your-app.fly.dev/mcp/`
+- [ ] Widget endpoint works: `curl https://your-app.fly.dev/widget`
+- [ ] Logs show no errors: `flyctl logs`
 
-### Lead Capture Tools (4)
-4. ✅ `capture_lead` - Capture new leads
-5. ✅ `match_client` - Match buyers to properties
-6. ✅ `schedule_viewing` - Book viewings
-7. ✅ `view_leads` - View client pipeline
+### ChatGPT Integration
+- [ ] Developer Mode enabled in ChatGPT
+- [ ] Connector created with production URL
+- [ ] Connector enabled in test chat
+- [ ] Test query works: "Show me properties in DY4 under £100,000"
+- [ ] Widget renders correctly (property cards visible)
+- [ ] Favorites work (heart icon toggles)
+- [ ] Sorting works (price/bedrooms dropdown)
 
-**Total: 7 tools**
-
----
-
-## Validation Checks
-
-### Data Persistence
-- [ ] Create new lead → Check `data/clients.jsonl` updated
-- [ ] Schedule viewing → Check both buyer and seller records updated
-- [ ] Restart server → Verify data persists
-
-### Error Handling
-- [ ] Try to match seller (not buyer) → Should error
-- [ ] Schedule viewing on sold property → Should error
-- [ ] Schedule conflicting viewing → Should error
-- [ ] Invalid client ID → Should error
-
-### Widget Display
-- [ ] `query_listings` → Property widget displays
-- [ ] `match_client` → Property widget displays (same widget)
-- [ ] Favorites persist across queries
-- [ ] Dark mode toggle works
+### Performance
+- [ ] Response time < 2 seconds
+- [ ] No memory warnings in logs
+- [ ] CPU usage normal
+- [ ] No 502/503 errors
 
 ---
 
-## Known Behaviors
+## 📊 Monitoring Setup
 
-### Expected
-- Lead source always = "ChatGPT" (by design)
-- Client IDs auto-increment from max existing
-- Viewing IDs start at V1001
-- 1-hour conflict window for viewings
-- Sold properties excluded from matching and viewing scheduling
+### Logging
+- [ ] Logs accessible: `flyctl logs -f`
+- [ ] Error tracking configured
+- [ ] Request IDs logged
+- [ ] Tool call IDs logged
 
-### Data Files
-- `data/clients.jsonl` - Persisted client data (grows with new leads)
-- `data/listings.jsonl` - Static property data (read-only)
-
----
-
-## Troubleshooting
-
-### Server won't start
-```bash
-# Check Python version
-python3 --version  # Should be 3.12+
-
-# Reinstall dependencies
-pip install -r requirements.txt
-
-# Check data files exist
-ls -la data/
-```
-
-### Tools not appearing in ChatGPT
-- Verify connector URL ends with `/mcp/`
-- Check server is running and accessible
-- Restart ChatGPT chat
-- Re-enable connector in Developer Mode
-
-### Widget not loading
-```bash
-# Rebuild widget
-cd web
-npm install
-npm run build
-cd ..
-
-# Restart server
-python3 server_apps_sdk.py
-```
-
-### Data not persisting
-- Check file permissions on `data/clients.jsonl`
-- Verify `save_jsonl()` function in `data_loader.py`
-- Check server logs for errors
+### Alerts (Optional)
+- [ ] Health check monitoring
+- [ ] Error rate alerts
+- [ ] Memory usage alerts
+- [ ] Uptime monitoring (e.g., UptimeRobot)
 
 ---
 
-## Success Criteria
+## 🔒 Security
 
-✅ All 7 tools callable from ChatGPT  
-✅ Property widget displays for `query_listings` and `match_client`  
-✅ New leads persist to `data/clients.jsonl`  
-✅ Viewings update both buyer and seller records  
-✅ Conflict detection prevents double-bookings  
-✅ Sold property validation works  
-✅ Lead filtering by role and stage works  
+### Secrets
+- [ ] No secrets in Git
+- [ ] Environment variables set via platform
+- [ ] API keys rotated (if any)
 
----
-
-## Post-Deployment
-
-### Monitor
-- Check `data/clients.jsonl` for new leads
-- Verify viewing schedules are conflict-free
-- Test widget rendering in ChatGPT
-
-### Document
-- Share example conversations
-- Note any edge cases discovered
-- Update documentation as needed
+### Access
+- [ ] HTTPS only (automatic with Fly.io)
+- [ ] CORS configured correctly
+- [ ] Rate limiting considered
 
 ---
 
-**Ready for production!** 🚀
+## 📝 Documentation
 
-All features tested and validated. The Property MCP Server now demonstrates:
-- Property search with interactive widget
-- Lead capture and CRM functionality
-- Viewing scheduling with validation
-- Pipeline management
+### Updated Docs
+- [ ] README.md includes production URL
+- [ ] DEPLOYMENT.md reviewed
+- [ ] Environment variables documented
+- [ ] Troubleshooting section complete
 
-Perfect showcase of MCP's business value for estate agents.
+### Team Communication
+- [ ] Team notified of deployment
+- [ ] Production URL shared
+- [ ] Known issues documented
+- [ ] Rollback procedure documented
+
+---
+
+## 🎯 Golden Prompts Test
+
+Test these prompts in ChatGPT to verify functionality:
+
+### Property Search
+- [ ] "Show me properties in DY4 7LG under £100,000"
+- [ ] "Find 3-bedroom houses with parking"
+- [ ] "What flats are available with gardens?"
+- [ ] "Show me the cheapest properties in DY4"
+
+### Calculations
+- [ ] "What's the average price for 2-bedroom properties?"
+- [ ] "Calculate average price for flats in DY4"
+
+### Lead Capture
+- [ ] "I'm looking to buy a 3-bed house, budget £150k"
+- [ ] "I want to sell my property at 123 Main St"
+- [ ] "Schedule a viewing for property ID 1 tomorrow at 2pm"
+
+### Widget Features
+- [ ] Property cards display with images
+- [ ] Favorite button works (persists across refreshes)
+- [ ] Sort by price works
+- [ ] Sort by bedrooms works
+- [ ] Dark mode adapts to ChatGPT theme
+
+---
+
+## 🔄 Rollback Plan
+
+If deployment fails:
+
+1. **Check logs**: `flyctl logs`
+2. **View releases**: `flyctl releases`
+3. **Rollback**: `flyctl releases rollback`
+4. **Verify**: Test health endpoint
+5. **Investigate**: Review error logs
+6. **Fix locally**: Test changes
+7. **Redeploy**: `flyctl deploy`
+
+---
+
+## 📞 Support Contacts
+
+- **Platform Support**: Fly.io support (if issues)
+- **FastMCP**: https://github.com/jlowin/fastmcp/issues
+- **OpenAI Apps SDK**: https://platform.openai.com/docs/mcp
+
+---
+
+## ✅ Sign-Off
+
+Deployment completed by: _______________
+
+Date: _______________
+
+Production URL: _______________
+
+Notes:
+_______________________________________________
+_______________________________________________
+_______________________________________________

@@ -323,7 +323,7 @@ WIDGET_URI = "ui://widget/my-widget.html"
 # Load widget bundle
 WIDGET_HTML = ""
 widget_path = Path("web/dist/component.js")
-css_path = Path("web/src/styles/index.css")
+css_path = Path("web/dist/component.css")  # Use built CSS from dist, not source
 
 if widget_path.exists():
     widget_js = widget_path.read_text(encoding="utf-8")

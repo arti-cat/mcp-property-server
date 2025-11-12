@@ -43,7 +43,7 @@ Date: November 12, 2025
 
 **Fix Applied:**
 - Injected CSS directly into HTML `<style>` tag
-- Loaded from `web/src/styles/index.css` (4.5KB)
+- Loaded from `web/dist/component.css` (3.6KB built file)
 - Includes:
   - Color variables (light/dark theme)
   - Spacing utilities
@@ -59,7 +59,7 @@ Date: November 12, 2025
 ### Server Side
 ```python
 # Load CSS and inject into HTML
-css_path = Path("web/src/styles/index.css")
+css_path = Path("web/dist/component.css")  # Use built CSS
 if css_path.exists():
     widget_css = css_path.read_text(encoding="utf-8")
 
@@ -167,7 +167,7 @@ const properties = toolOutput?.properties || [];
 ## Files Changed
 
 ### `server_apps_sdk.py`
-- Added CSS loading from `web/src/styles/index.css`
+- Added CSS loading from `web/dist/component.css` (built file)
 - Injected CSS into HTML `<style>` tag
 - Widget HTML now includes full styling
 

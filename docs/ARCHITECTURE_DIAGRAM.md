@@ -64,7 +64,7 @@ server_apps_sdk.py
 │
 ├─ Widget Loading
 │  ├─ Load web/dist/component.js (React bundle)
-│  ├─ Load web/src/styles/index.css (Styles)
+│  ├─ Load web/dist/component.css (Built styles)
 │  └─ Inject into HTML template
 │
 ├─ FastMCP Setup
@@ -337,7 +337,7 @@ const theme = useTheme();
 2. SERVER LOADING
    server_apps_sdk.py
    ├─ Reads web/dist/component.js
-   ├─ Reads web/src/styles/index.css
+   ├─ Reads web/dist/component.css
    └─ Injects into HTML template
           ↓
    WIDGET_HTML = """

@@ -139,7 +139,7 @@ cd web && npm run build
 
 **Output:** `web/dist/component.js` (149KB)
 
-**CSS:** Loaded from `web/src/styles/index.css` (4.5KB) and injected into HTML
+**CSS:** Built to `web/dist/component.css` (3.6KB) and injected into HTML by server
 
 ---
 

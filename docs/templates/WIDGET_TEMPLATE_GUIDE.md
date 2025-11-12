@@ -69,7 +69,7 @@ WIDGET_URI = "ui://widget/[YOUR_WIDGET_NAME].html"
 # --- Load Widget Bundle ---
 WIDGET_HTML = ""
 widget_path = Path("web/dist/component.js")
-css_path = Path("web/src/styles/index.css")
+css_path = Path("web/dist/component.css")  # Use built CSS from dist, not source
 
 if widget_path.exists():
     widget_js = widget_path.read_text(encoding="utf-8")
@@ -714,9 +714,10 @@ ChatGPT Theme → window.openai.theme → useTheme() → data-theme attribute �
 1. **Forgetting `stateless_http=True`** - Required for ChatGPT
 2. **Missing `_meta` fields** - Widget won't be recognized
 3. **Wrong MIME type** - Must be `text/html+skybridge`
-4. **Not injecting CSS** - Widget renders but unstyled
-5. **Not handling loading state** - Widget shows error before data loads
-6. **Not using `useSyncExternalStore`** - State updates won't work
+4. **Wrong CSS path** - Use `web/dist/component.css` (built), not `web/src/styles/index.css` (source)
+5. **Not injecting CSS** - Widget renders but unstyled
+6. **Not handling loading state** - Widget shows error before data loads
+7. **Not using `useSyncExternalStore`** - State updates won't work
 
 ---
 

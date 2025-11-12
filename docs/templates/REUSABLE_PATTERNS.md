@@ -153,8 +153,9 @@ State persists in ChatGPT
 - [ ] `web/src/Widget.tsx` - Main component
 - [ ] `web/src/hooks/` - Reusable hooks (4 files)
 - [ ] `web/src/types/` - TypeScript types
-- [ ] `web/src/styles/index.css` - Styles
-- [ ] `web/dist/component.js` - Built bundle
+- [ ] `web/src/styles/index.css` - Source styles
+- [ ] `web/dist/component.js` - Built JS bundle
+- [ ] `web/dist/component.css` - Built CSS (loaded by server)
 
 ---
 
@@ -263,9 +264,11 @@ const filtered = useMemo(() => {
 - Check: Using `useWidgetState` hook?
 
 ### Styles Not Applied
+- Check: CSS path correct? (Use `web/dist/component.css`, not `web/src/styles/index.css`)
 - Check: CSS injected into HTML template?
 - Check: CSS variables defined?
 - Check: `data-theme` attribute set?
+- Check: Widget built? (`npm run build` creates `web/dist/component.css`)
 
 ---
 
