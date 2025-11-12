@@ -232,9 +232,31 @@ cd docs
 ./create-widget-project.sh my-widget-name
 ```
 
+## Production Deployment
+
+Deploy to persistent hosting with automatic HTTPS:
+
+```bash
+# Quick deploy to Fly.io
+./deploy.sh
+
+# Manual deployment
+fly launch --no-deploy
+fly deploy
+```
+
+**Supported Platforms:**
+- ✅ Fly.io (recommended) - Free tier available
+- ✅ Render - Auto-deploy from Git
+- ✅ Railway - Simple pricing
+- ✅ Google Cloud Run - Scale-to-zero
+
+**See [DEPLOYMENT.md](DEPLOYMENT.md) for complete guide.**
+
 ## Resources
 
 - [FastMCP Documentation](https://gofastmcp.com)
 - [ChatGPT MCP Integration](https://gofastmcp.com/integrations/chatgpt.md)
 - [ChatGPT Apps SDK](https://platform.openai.com/docs/mcp)
 - [MCP Protocol](https://modelcontextprotocol.io)
+- [Deployment Guide](DEPLOYMENT.md)

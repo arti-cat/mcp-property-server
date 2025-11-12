@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+*.cover
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Documentation (not needed in container)
+docs/
+archive/
+*.md
+!README.md
+
+# Development files
+test_*.py
+pytest.ini
+.python-version
+
+# Node/Web (already built)
+web/node_modules/
+web/src/
+web/package*.json
+web/tsconfig.json
+web/vite.config.ts
+
+# Deployment
+.dockerignore
+fly.toml
+ngrok.yml
+
+# Scripts
+*.sh

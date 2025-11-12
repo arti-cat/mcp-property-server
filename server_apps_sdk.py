@@ -17,6 +17,25 @@ import mcp.types as types
 from mcp.server.fastmcp import FastMCP
 import tools
 import json
+import os
+import logging
+import sys
+from datetime import datetime
+
+# --- Configuration ---
+ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
+PORT = int(os.getenv("PORT", "8000"))
+HOST = "0.0.0.0" if ENVIRONMENT == "production" else "127.0.0.1"
+
+# --- Logging Setup ---
+logging.basicConfig(
+    level=logging.INFO if ENVIRONMENT == "production" else logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 # --- Constants ---
 MIME_TYPE = "text/html+skybridge"
@@ -25,7 +44,7 @@ WIDGET_URI = "ui://widget/property-list.html"
 # --- Load UI bundle ---
 WIDGET_HTML = ""
 widget_path = Path("web/dist/component.js")
-css_path = Path("web/src/styles/index.css")
+css_path = Path("web/dist/component.css")  # Use built CSS from dist, not source
 
 if widget_path.exists():
     widget_js = widget_path.read_text(encoding="utf-8")
@@ -34,7 +53,9 @@ if widget_path.exists():
     widget_css = ""
     if css_path.exists():
         widget_css = css_path.read_text(encoding="utf-8")
-        print(f"✅ Widget CSS loaded: {len(widget_css):,} bytes")
+        logger.info(f"Widget CSS loaded: {len(widget_css):,} bytes")
+    else:
+        logger.warning(f"Widget CSS not found at {css_path}")
     
     WIDGET_HTML = f"""<!DOCTYPE html>
 <html>
@@ -48,10 +69,9 @@ if widget_path.exists():
     <script type="module">{widget_js}</script>
 </body>
 </html>"""
-    print(f"✅ Widget bundle loaded: {len(widget_js):,} bytes")
+    logger.info(f"Widget HTML bundle created: {len(WIDGET_HTML):,} bytes")
 else:
-    print("❌ Widget bundle not found at web/dist/component.js")
-    print("   Run: cd web && npm run build")
+    logger.warning("Widget bundle not found at web/dist/component.js - run: cd web && npm run build")
 
 # --- Create FastMCP Server ---
 mcp = FastMCP(
@@ -461,6 +481,16 @@ async def serve_test_data(request):
     result = tools.query_listings(postcode="DY4", max_price=100000, limit=5)
     return JSONResponse(result)
 
+async def serve_health(request):
+    """Health check endpoint for monitoring."""
+    from datetime import datetime
+    return JSONResponse({
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "environment": ENVIRONMENT,
+        "widget_loaded": bool(WIDGET_HTML)
+    })
+
 async def serve_index(request):
     """Serve a test page with links."""
     widget_status = "Loaded" if WIDGET_HTML else "Not loaded"
@@ -519,6 +549,7 @@ async def serve_index(request):
 # Add routes to the app
 app.routes.extend([
     Route("/", serve_index),
+    Route("/health", serve_health),
     Route("/widget", serve_widget_test),
     Route("/test-data", serve_test_data),
 ])
@@ -541,34 +572,40 @@ except Exception as e:
 if __name__ == "__main__":
     import uvicorn
     
-    print("=" * 70)
-    print("Property MCP Server - OpenAI Apps SDK")
-    print("=" * 70)
-    print(f"Mode: Apps SDK with Custom Widgets")
-    print(f"Port: 8000")
-    print(f"Transport: Streamable HTTP (ChatGPT compatible)")
-    print()
-    print("Endpoints:")
-    print(f"  Home:        http://localhost:8000/")
-    print(f"  Widget Test: http://localhost:8000/widget")
-    print(f"  Test Data:   http://localhost:8000/test-data")
-    print(f"  MCP:         http://localhost:8000/mcp/")
-    print()
-    print("Widget Status:")
-    if WIDGET_HTML:
-        print(f"  ✅ Loaded")
-    else:
-        print(f"  ❌ Not loaded - run: cd web && npm run build")
-    print()
-    print("Browser Testing:")
-    print("  1. Open: http://localhost:8000/")
-    print("  2. Click 'View Widget' to test in browser")
-    print("  3. Open DevTools (F12) to check for errors")
-    print()
-    print("ChatGPT Integration:")
-    print("  1. Expose with ngrok: ngrok http 8000")
-    print("  2. In ChatGPT, create connector with: https://your-url.ngrok.io/mcp/")
-    print("  3. Test with: 'Show me properties in DY4 under £100,000'")
-    print("=" * 70)
+    logger.info("=" * 70)
+    logger.info("Property MCP Server - OpenAI Apps SDK")
+    logger.info("=" * 70)
+    logger.info(f"Environment: {ENVIRONMENT}")
+    logger.info(f"Port: {PORT}")
+    logger.info(f"Host: {HOST}")
+    logger.info(f"Transport: Streamable HTTP (ChatGPT compatible)")
+    logger.info("")
+    logger.info("Endpoints:")
+    logger.info(f"  Home:        http://{HOST}:{PORT}/")
+    logger.info(f"  Health:      http://{HOST}:{PORT}/health")
+    logger.info(f"  Widget Test: http://{HOST}:{PORT}/widget")
+    logger.info(f"  MCP:         http://{HOST}:{PORT}/mcp/")
+    logger.info("")
     
-    uvicorn.run("server_apps_sdk:app", host="0.0.0.0", port=8000)
+    if WIDGET_HTML:
+        logger.info("Widget Status: ✅ Loaded")
+    else:
+        logger.warning("Widget Status: ❌ Not loaded - run: cd web && npm run build")
+    
+    if ENVIRONMENT == "development":
+        logger.info("")
+        logger.info("Development Mode:")
+        logger.info("  1. Test locally: http://localhost:8000/")
+        logger.info("  2. Expose with ngrok: ngrok http 8000")
+        logger.info("  3. Create ChatGPT connector with: https://your-url.ngrok.io/mcp/")
+    
+    logger.info("=" * 70)
+    
+    # Start server
+    uvicorn.run(
+        "server_apps_sdk:app",
+        host=HOST,
+        port=PORT,
+        log_level="info" if ENVIRONMENT == "production" else "debug",
+        access_log=True
+    )
